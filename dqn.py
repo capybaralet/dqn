@@ -8,7 +8,12 @@ from theano import printing
 from theano.gradient import disconnected_grad
 
 
-# doesn't have a target network, but otherwise looks good...
+# MISSING FEATURES:
+#   image pre-processing
+#   target network
+# TODO:
+#   check that the CNN is big enough...
+
 # memory : how many episodes to keep in memory
 
 class Agent:

@@ -2,7 +2,7 @@ import sys
 import gym
 from dqn import Agent
 
-num_episodes = 1000
+num_episodes = 1000000
 
 env_name = sys.argv[1] if len(sys.argv) > 1 else "MsPacman-v0"
 env = gym.make(env_name)
@@ -10,6 +10,7 @@ env = gym.make(env_name)
 agent = Agent(state_size=env.observation_space.shape,
               number_of_actions=env.action_space.n,
               save_name=env_name)
+#assert False
 
 for e in xrange(num_episodes):
     observation = env.reset()
