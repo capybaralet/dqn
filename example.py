@@ -2,7 +2,7 @@ import sys
 import gym
 from dqn import Agent
 
-num_episodes = 20
+num_episodes = 1000
 
 env_name = sys.argv[1] if len(sys.argv) > 1 else "MsPacman-v0"
 env = gym.make(env_name)

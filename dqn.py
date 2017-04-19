@@ -7,23 +7,20 @@ from keras import backend as K
 from theano import printing
 from theano.gradient import disconnected_grad
 
+
+# doesn't have a target network, but otherwise looks good...
+# memory : how many episodes to keep in memory
+
 class Agent:
     def __init__(self, state_size=None, number_of_actions=1,
-                 epsilon=0.1, mbsz=32, discount=0.9, memory=50,
+                 epsilon=0.1, batch_size=32, discount=0.9, memory=50,
                  save_name='basic', save_freq=10):
-        self.state_size = state_size
-        self.number_of_actions = number_of_actions
-        self.epsilon = epsilon
-        self.mbsz = mbsz
-        self.discount = discount
-        self.memory = memory
-        self.save_name = save_name
+        self.__dict__.update(locals())
         self.states = []
         self.actions = []
         self.rewards = []
         self.experience = []
         self.i = 1
-        self.save_freq = save_freq
         self.build_functions()
 
     def build_model(self):
@@ -48,6 +45,7 @@ class Agent:
         NS = Input(shape=self.state_size)
         A = Input(shape=(1,), dtype='int32')
         R = Input(shape=(1,), dtype='float32')
+        # T = is_terminal
         T = Input(shape=(1,), dtype='int32')
         self.build_model()
         self.value_fn = K.function([S], self.model(S))
@@ -91,14 +89,15 @@ class Agent:
         self.rewards[-1].append(reward)
         return self.iterate()
 
+    # perform one training step
     def iterate(self):
         N = len(self.states)
-        S = numpy.zeros((self.mbsz,) + self.state_size)
-        NS = numpy.zeros((self.mbsz,) + self.state_size)
-        A = numpy.zeros((self.mbsz, 1), dtype=numpy.int32)
-        R = numpy.zeros((self.mbsz, 1), dtype=numpy.float32)
-        T = numpy.zeros((self.mbsz, 1), dtype=numpy.int32)
-        for i in xrange(self.mbsz):
+        S = numpy.zeros((self.batch_size,) + self.state_size)
+        NS = numpy.zeros((self.batch_size,) + self.state_size)
+        A = numpy.zeros((self.batch_size, 1), dtype=numpy.int32)
+        R = numpy.zeros((self.batch_size, 1), dtype=numpy.float32)
+        T = numpy.zeros((self.batch_size, 1), dtype=numpy.int32)
+        for i in xrange(self.batch_size):
             episode = random.randint(max(0, N-50), N-1)
             num_frames = len(self.states[episode])
             frame = random.randint(0, num_frames-1)
